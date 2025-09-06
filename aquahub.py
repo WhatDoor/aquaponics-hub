@@ -3,16 +3,29 @@ import threading
 import json
 import paho.mqtt.client as mqtt
 import temperature_probe
+from gpiozero import Servo
 
-# --- Stub functions (to be implemented later) ---
 def take_picture():
     print("📸 Taking a picture...")
 
 def take_video():
-    print("Taking a video...")
+    print("📸 Taking a video...")
 
-def feed():
-    print("🐟 Dispensing food...")
+def feed(feedCount):
+    print("🐟 Dispensing food..." + str(feedCount) + " feeds.") 
+
+    servo = Servo(17)
+    time.sleep(0.5)
+    
+    for i in range(feedCount):
+        print("Feeding... " + str(i+1) + "/" + str(feedCount))
+        # Adjust pulse widths for your servo's range
+        servo.min()  # One end (~0°)
+        time.sleep(0.3)
+        servo.max()  # One end (~0°)
+        time.sleep(2)
+
+    print("Feed dispense complete!") 
 
 
 # --- Load Config ---
@@ -34,7 +47,7 @@ client = mqtt.Client("client_id","aquahub")
 # --- MQTT Callbacks ---
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code", rc)
-    client.subscribe([(TOPIC_TAKE_PICTURE, 0), (TOPIC_FEED, 0)])
+    client.subscribe([(TOPIC_TAKE_PICTURE, 2), (TOPIC_FEED, 2), (TOPIC_TAKE_VIDEO, 2)])
 
 def on_message(client, userdata, msg):
     payload = msg.payload.decode()
@@ -44,10 +57,11 @@ def on_message(client, userdata, msg):
         take_picture()
 
     elif msg.topic == TOPIC_TAKE_VIDEO and payload == "1":
-        take_picture()
+        take_video()
 
-    elif msg.topic == TOPIC_FEED and payload == "1":
-        feed()
+    elif msg.topic == TOPIC_FEED:
+        feedCount = int(payload)
+        feed(feedCount)
 
 
 # --- Background Temperature Task ---
