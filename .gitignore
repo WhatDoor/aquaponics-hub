@@ -208,3 +208,7 @@ __marimo__/
 
 # Config file
 config.json
+
+# generated images
+picture.png
+video.h264

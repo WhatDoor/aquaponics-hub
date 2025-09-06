@@ -4,12 +4,30 @@ import json
 import paho.mqtt.client as mqtt
 import temperature_probe
 from gpiozero import Servo
+from picamera2 import Picamera2
+from picamera2.encoders import H264Encoder, Quality
+
+picam2 = Picamera2()
+still_config = picam2.create_still_configuration()
+video_config = picam2.create_video_configuration(main={"size": (1640, 1232)})
 
 def take_picture():
     print("📸 Taking a picture...")
+    picam2.configure(still_config)
+    picam2.start()
+    picam2.capture_file("picture.png")
+    picam2.stop()
+    print("Picture taken!")
 
 def take_video():
     print("📸 Taking a video...")
+    picam2.configure(video_config)
+    encoder = H264Encoder()
+    picam2.start_recording(encoder, 'video.h264', quality=Quality.HIGH)
+    time.sleep(10)
+    picam2.stop_recording()
+
+    print("Video taken!")
 
 def feed(feedCount):
     print("🐟 Dispensing food..." + str(feedCount) + " feeds.") 
