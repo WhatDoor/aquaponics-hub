@@ -1,0 +1,14 @@
+{
+  "broker": "<MQTT BROKER IP>",
+  "port": <MQTT BROKER IP>,
+  "username": "<MQTT USER>",
+  "password": "<MQTT PASS>",
+  "topics": {
+    "take_picture": "aquahub/camera/take",
+    "take_video": "aquahub/camera/video",
+    "feed": "aquahub/feeder/run",
+    "temperature": "aquahub/sensors/water_temperature"
+  },
+  "temperature_interval_seconds": 1800
+}
+
